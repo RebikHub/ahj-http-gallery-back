@@ -1,4 +1,3 @@
-const data = require('./tickets');
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const app = new Koa();
@@ -32,96 +31,13 @@ app.use(async (ctx, next) => {
 });
 
 app.use(async ctx => {
-    const method = ctx.request.querystring;
-    if (method === 'allTickets') {
-        ctx.response.body = data.tickets;
-        return;
-    }
+    const method = ctx.request.query.method;
+    console.log(method); 
 
-    if (method.includes('ticketById')) {
-        const inid = method.slice(14);
-        data.fullTickets.forEach((item) => {
-            if (item.id === inid) {
-                ctx.response.body = item.description;
-            }
-        })
-        return;
-    }
+    ctx.response.body = 'hi';
+    // const ticket = JSON.parse(ctx.request.body);
 
-    if (method.includes('statusId')) {
-        const inid = method.slice(12);
-        data.fullTickets.forEach((item) => {
-            if (item.id === inid) {
-                if (item.status === true) {
-                    item.status = false;
-                } else {
-                    item.status = true;
-                }
-            }
-        })
-        data.tickets.forEach((item) => {
-            if (item.id === inid) {
-                if (item.status === true) {
-                    item.status = false;
-                } else {
-                    item.status = true;
-                }
-            }
-        })
-        return;
-    }
-
-    if (method.includes('deleteId')) {
-        const inid = method.slice(12);
-        let indexF = null;
-        let index = null;
-        data.fullTickets.forEach((item, i) => {
-            if (item.id === inid) {
-                indexF = i;
-            }
-        })
-        data.fullTickets.splice(indexF, 1);
-        data.tickets.forEach((item, i) => {
-            if (item.id === inid) {
-                index = i;
-            }
-        })
-        data.tickets.splice(index, 1);
-        return;
-    }
-
-    if (method === 'createTicket') {
-        const ticket = JSON.parse(ctx.request.body);
-
-        if (ticket.id) {
-            data.tickets.forEach((item) => {
-                if (item.id === ticket.id) {
-                    item.name = ticket.name;
-                    item.status = ticket.status;
-                }
-            })
-            data.fullTickets.forEach((item) => {
-                if (item.id === ticket.id) {
-                    item.name = ticket.name;
-                    item.description = ticket.description;
-                    item.status = ticket.status;
-                }
-            })
-            return;
-        }
-        ticket.id = uuidv4();
-        data.fullTickets.push(ticket);
-        data.tickets.push({
-            id: ticket.id,
-            name: ticket.name,
-            status: ticket.status,
-            created: ticket.created
-        });
-        ctx.response.status = 200;
-        return;
-    }
-
-    ctx.response.status = 404;
+    // ctx.response.status = 404;
     return;
 });
 
