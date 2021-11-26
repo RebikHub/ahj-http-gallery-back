@@ -33,7 +33,9 @@ app.use(async (ctx, next) => {
 app.use(async ctx => {
     const method = ctx.request.query.method;
     console.log(method); 
-
+    if (method === 'uploadImage') {
+        console.log(ctx.request.body);
+    }
     ctx.response.body = 'hi';
     // const ticket = JSON.parse(ctx.request.body);
 
