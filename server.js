@@ -6,7 +6,6 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
-const cors = require('@koa/cors');
 const port = process.env.PORT || 3333;
 
 const uploads = path.join(__dirname, '/uploads');
@@ -15,7 +14,7 @@ app.use(koaBody({
     urlencoded:true,
     multipart: true,
 }));
-app.use(cors());
+
 app.use(koaStatic(uploads));
 
 let list = fs.readdirSync(uploads);
