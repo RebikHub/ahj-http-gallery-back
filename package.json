@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/RebikHub/ahj-http-gallery-back#readme",
   "dependencies": {
+    "@koa/cors": "^3.1.0",
     "forever": "^4.0.1",
     "koa": "^2.13.4",
     "koa-body": "^4.2.0",
