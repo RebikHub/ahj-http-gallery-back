@@ -5,6 +5,7 @@ const app = new Koa();
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 const port = process.env.PORT || 3333;
 
 const uploads = path.join(__dirname, '/uploads');
@@ -44,41 +45,50 @@ app.use(async (ctx, next) => {
 
 app.use(async ctx => {
     const method = ctx.request.query.method;
-    console.log(method); 
-
+    console.log(method);
     if (method === 'imgList') {
-        const uploadsLink = [];
-        list.forEach(elem => {
-            uploadsLink.push({
-                url: `http://localhost:3333/uploads/${elem}`,
-                name: elem,
-        });
-        })
-        ctx.response.body = JSON.stringify(uploadsLink);
+        list = fs.readdirSync(uploads);
+        ctx.response.body = JSON.stringify(list);
         return;
     }
 
     if (method === 'uploadImage') {
-            // const { file } = ctx.request.files;
-            console.log(ctx.request.files);
-            // const link = await new Promise((resolve, reject) => {
-            //   const oldPath = file.path;
-            //   const filename = uuid.v4();
-            //   const newPath = path.join(uploads, filename);
-            //   const callback = error => reject(error);
-            //   const readStream = fs.createReadStream(oldPath);
-            //   const writeStream = fs.createWriteStream(newPath);
-            //   readStream.on('error', callback);
-            //   writeStream.on('error', callback);
-            //   readStream.on('close', () => {
-            //     console.log('close');
-            //     fs.unlink(oldPath, callback);
-            //     resolve(filename);
-            //   });
-            //   readStream.pipe(writeStream);
-            // });
-            // ctx.response.body = link;
-            // list = fs.readdirSync(uploads);
+            const { file } = ctx.request.files;
+
+            if (ctx.request.files.file) {
+                const filename = uuidv4();
+                const link = await new Promise((resolve) => {
+                  const oldPath = file.path;
+                  const filename = uuidv4();
+                  const newPath = path.join(uploads, filename);
+                  const readStream = fs.createReadStream(oldPath);
+                  const writeStream = fs.createWriteStream(newPath);
+                  readStream.on('close', () => {
+                    fs.unlink(oldPath, (err) => {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                    resolve(filename);
+                  });
+                  readStream.pipe(writeStream);
+                });
+            } else {
+                const url = ctx.request.body.url;
+                const filename = uuidv4();
+                console.log('http');
+                https.get(url, (res) => {
+                    const path = `${__dirname}/uploads/${filename}`; 
+                    const filePath = fs.createWriteStream(path);
+                    res.pipe(filePath);
+                    filePath.on('finish',() => {
+                        filePath.close();
+                        console.log('Download Completed'); 
+                    })
+                })
+            }
+
+            list = fs.readdirSync(uploads);
             ctx.response.status = 200;
         return;
     }
