@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "forever server.js",
-    "watch": "forever -w server.js",
-    "start-node": "nodemon server.js"
+    "watch": "forever -w server.js"
   },
   "repository": {
     "type": "git",
