@@ -7,6 +7,9 @@
     "start": "forever server.js",
     "watch": "forever -w server.js"
   },
+  "engines": {
+    "node": "12"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RebikHub/ahj-http-gallery-back.git"
